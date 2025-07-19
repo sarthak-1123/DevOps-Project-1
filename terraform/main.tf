@@ -55,6 +55,15 @@ resource "aws_vpc_security_group_ingress_rule" "public_sg_ingress" {
   
 }
 
+resource "aws_vpc_security_group_ingress_rule" "public_sg_ssh_ingress" {
+  security_group_id = aws_security_group.public_sg.id
+  from_port         = 22
+  to_port           = 22
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+  
+}
+
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main-vpc.id
 
@@ -112,3 +121,4 @@ resource "aws_instance" "servers" {
               echo "Hello, World!" > /var/www/html/index.html
               EOF
 }
+
