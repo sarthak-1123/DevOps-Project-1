@@ -46,21 +46,13 @@ resource "aws_vpc_security_group_egress_rule" "public_sg_egress" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "public_sg_ingress" {
+  for_each = var.sg_ingress_rule
   security_group_id = aws_security_group.public_sg.id
-  from_port         = 80
-  to_port           = 80
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
-  description       = "Allow HTTP traffic"
-  
-}
-
-resource "aws_vpc_security_group_ingress_rule" "public_sg_ssh_ingress" {
-  security_group_id = aws_security_group.public_sg.id
-  from_port         = 22
-  to_port           = 22
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  ip_protocol       = each.value.ip_protocol
+  description       = "Allow ${each.key} traffic"
+  cidr_ipv4         = each.value.cidr_ipv4
   
 }
 
@@ -101,6 +93,7 @@ resource "aws_key_pair" "main_key_pair" {
 resource "local_file" "private_key" {
   content  = tls_private_key.main_key.private_key_pem
   filename = "${path.module}/main_key.pem"
+  file_permission = "0400"
 }
 
 resource "aws_instance" "servers" {
@@ -121,4 +114,3 @@ resource "aws_instance" "servers" {
               echo "Hello, World!" > /var/www/html/index.html
               EOF
 }
-
