@@ -18,7 +18,7 @@ spec:
         app: dockerfile-assignment1
     spec:
       containers:
-      - image: dash1123/dockerfile-assignment1:latest
+      - image: <image>
         name: dockerfile-assignment1
         resources: {}
 status: {}
